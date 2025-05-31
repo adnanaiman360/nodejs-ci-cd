@@ -2,19 +2,15 @@ pipeline {
     agent any
 
     environment {
-        // These credentials must be configured in Jenkins Credentials Manager
-        DOCKER_USER = credentials('dockerhub-creds_USR')
-        DOCKER_PASS = credentials('dockerhub-creds_PSW')
-        IMAGE_NAME  = "ads12345678/nodejs-ci-cd-demo"
+        DOCKERHUB_CREDS = credentials('dockerhub-creds')
+        IMAGE_NAME = "ads12345678/nodejs-ci-cd-demo"
     }
 
     stages {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh """
-                      docker build -t ${IMAGE_NAME}:${env.BUILD_NUMBER} .
-                    """
+                    sh "docker build -t ${IMAGE_NAME}:${env.BUILD_NUMBER} ."
                 }
             }
         }
@@ -23,11 +19,10 @@ pipeline {
             steps {
                 script {
                     sh """
-                      echo "${DOCKER_PASS}" | docker login -u "${DOCKER_USER}" --password-stdin
-                      docker push ${IMAGE_NAME}:${env.BUILD_NUMBER}
-                      docker tag ${IMAGE_NAME}:${env.BUILD_NUMBER} ${IMAGE_NAME}:latest
-                      docker push ${IMAGE_NAME}:latest
-                      docker logout
+                      echo "${DOCKERHUB_CREDS_PSW}" | docker login -u "${DOCKERHUB_CREDS_USR}" --password-stdin
+                      docker push "${IMAGE_NAME}:${env.BUILD_NUMBER}"
+                      docker tag "${IMAGE_NAME}:${env.BUILD_NUMBER}" "${IMAGE_NAME}:latest"
+                      docker push "${IMAGE_NAME}:latest"
                     """
                 }
             }
