@@ -39,7 +39,7 @@ pipeline {
                 script {
                     sh """
                       docker rm -f nodejs-app || true
-                      docker run -d --name nodejs-app -p 8080:8080 ${IMAGE_NAME}:latest
+                      docker run -d --name nodejs-app -p 8081:8080 ${IMAGE_NAME}:latest
                     """
                 }
             }
