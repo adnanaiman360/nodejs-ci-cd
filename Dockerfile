@@ -1,19 +1,20 @@
-FROM jenkins/jenkins:lts
+# 1. Start from an official Node 18 image
+FROM node:18-alpine
 
-USER root
-RUN apt-get update && apt-get install -y docker.io curl \
- && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
- && apt-get install -y nodejs
-
+# 2. Create app directory
 WORKDIR /app
 
+# 3. Copy package.json and package-lock.json first
 COPY package*.json ./
-RUN chown -R jenkins:jenkins /app
 
-USER jenkins
+# 4. Install app dependencies
 RUN npm install
 
+# 5. Copy the rest of the source code
 COPY . .
 
+# 6. Expose port 8080 (your app listens on 8080)
 EXPOSE 8080
-CMD ["npm", "start"]
+
+# 7. Default command to run your app
+CMD ["node", "app.js"]
